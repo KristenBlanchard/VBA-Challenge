@@ -1,4 +1,4 @@
-# VBA_Challenge
+# VBA-Challenge
 
 ### Files
  * Multiple_year_stock_data(complete) : Contains final result data in Excel format through Visual Basics Coding
