@@ -13,7 +13,8 @@
     * Yearly chnage from opening price at the begining of the year to the closing price at the end of the year
     * The percent change from openinig price at the begining of the year to the closing price at the end of that year
     * The total stock volume of each stock
-  *BONUS : Each yearly Data file (2014,2015, & 2016) includes the following results:
+    
+  * BONUS : Each yearly Data file (2014,2015, & 2016) includes the following results:
     * The stock with the greatest percent increase
     * The stock with the greatest percent decrease
     * The stock with the greatest total volume
