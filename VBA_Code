@@ -1,0 +1,144 @@
+Attribute VB_Name = "Module1"
+Sub StockVolume()
+    
+'for all loops
+    For Each ws In Worksheets
+    
+        ' Determine the last row
+            lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+            
+        ' Add heading for summary
+            ws.Cells(1, "I").Value = "Ticker"
+            ws.Cells(1, "J").Value = "Yearly Change"
+            ws.Cells(1, "K").Value = "Percent Change"
+            ws.Cells(1, "L").Value = "Total Stock Volume"
+        
+        'Define variables
+          Dim Open_Price As Double
+          Dim Close_Price As Double
+          Dim Yearly_Change As Double
+          Dim Ticker_Name As String
+          Dim Percent_Change As Double
+          Dim Volume As Double
+             Volume = 0
+          Dim Row As Double
+             Row = 2
+        
+        'Set initial open price
+        Open_Price = ws.Cells(2, 3).Value
+        
+         'Creat loop for all tickers
+            For i = 2 To lastRow
+                lastRowSummary = ws.Cells(i, 10).End(xlUp).Row
+
+            'if we are still within the same ticker symbol, if it is not then
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+                ' Set ticker name
+                Ticker_Name = ws.Cells(i, 1).Value
+                ws.Cells(Row, 9).Value = Ticker_Name
+                
+                ' Set close price
+                Close_Price = ws.Cells(i, 6).Value
+                
+                ' Add yearly change
+                Yearly_Change = Close_Price - Open_Price
+                ws.Cells(Row, 10).Value = Yearly_Change
+                
+                ' Add percent change
+                    If (Open_Price = 0 And Close_Price = 0) Then
+                         Percent_Change = 0
+                    ElseIf (Open_Price = 0 And Close_Price <> 0) Then
+                         Percent_Change = 1
+                    Else
+                        Percent_Change = Yearly_Change / Open_Price
+                        ws.Cells(Row, 11).Value = Percent_Change
+                        ws.Cells(Row, 11).NumberFormat = "0.00%"
+                        
+                 'Add color
+                     For y = 2 To lastRowSummary
+                     
+                        'positive ranges
+                              If (ws.Cells(y, 10).Value > 0 Or ws.Cells(y, 10).Value = 0) Then
+                                    ws.Cells(y, 10).Interior.Color = vbGreen
+                                    
+                        'negative ranges
+                            ElseIf ws.Cells(y, 10).Value < 0 Then
+                                    ws.Cells(y, 10).Interior.Color = vbRed
+                                    
+                            End If
+                            
+                    Next y
+                    
+                    End If
+           
+             
+                ' Add total volume
+                Volume = Volume + ws.Cells(i, 7).Value
+                ws.Cells(Row, 12).Value = Volume
+                
+                ' Add one to the summary table row
+                Row = Row + 1
+                
+                ' reset the open price
+                Open_Price = ws.Cells(i + 1, 3)
+                
+                ' reset the Volume
+                Volume = 0
+                
+            'else ticker is the same
+            Else
+                Volume = Volume + ws.Cells(i, 7).Value
+            
+            End If
+            
+        Next i
+'Set row headers for greatest %increase/decrease and total volume
+    'Greatest% increase
+    ws.Cells(2, 14).Value = "Greatest % Increase"
+    
+    'Greatest % decrease
+    ws.Cells(3, 14).Value = "Greatest % Decrease"
+    
+    'Greatest Total Volume
+    ws.Cells(4, 14).Value = "Greatest Total Volume"
+    
+'Set column headers for ticker and value
+    'ticker
+    ws.Cells(1, 15).Value = "Ticker"
+    
+    'value
+    ws.Cells(1, 16).Value = "Value"
+    
+'for loop to find values
+    For j = 2 To lastRowSummary
+            
+        'greatest % increase
+            If ws.Cells(j, 11).Value = WorksheetFunction.Max(ws.Range("K2:K" & lastRowSummary)) Then
+                ws.Cells(2, 15).Value = ws.Cells(j, 9).Value
+                ws.Cells(2, 16).Value = ws.Cells(j, 11).Value
+                ws.Cells(2, 16).NumberFormat = "0.00%"
+        'greatest % decrease
+            ElseIf ws.Cells(j, 11).Value = WorksheetFunction.Min(ws.Range("K2:K" & lastRowSummary)) Then
+                ws.Cells(3, 15).Value = ws.Cells(j, 9).Value
+                ws.Cells(3, 16).Value = ws.Cells(j, 11).Value
+                ws.Cells(3, 16).NumberFormat = "0.00%"
+        'greatest total volume
+            ElseIf ws.Cells(j, 12).Value = WorksheetFunction.Max(ws.Range("L2:L" & lastRowSummary)) Then
+                ws.Cells(4, 15).Value = ws.Cells(j, 9).Value
+                ws.Cells(4, 16).Value = ws.Cells(j, 12).Value
+            
+            End If
+            
+    Next j
+    
+'formatting width
+    ws.Columns("J:J").ColumnWidth = 12
+    ws.Columns("K:K").ColumnWidth = 15
+    ws.Columns("L:L").ColumnWidth = 17
+    ws.Columns("N:N").ColumnWidth = 19
+    
+Next ws
+
+End Sub
+
